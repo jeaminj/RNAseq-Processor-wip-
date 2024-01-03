@@ -44,15 +44,19 @@ runQCmenu () {
     echo ============================ 
     echo Quality Control with FastQC 
     echo ============================ 
-    echo Select "[1]" Run FastQC on all fastq files in $sraDir "[2]" Input manual file'(s)' selection "[r]" Return to menu
+    echo Select "[1]" Run FastQC on all fastq files in a directory "[2]" Run FastQC only on select file'(s)' "[r]" Return to menu
     echo "---------------------------"
     read user_sel
     if [ "$user_sel" == 1 ] # FastQC on all .fastq files in /rawData
     then
-        cd $rawDataDir
-        fastqc *
-        multiqc .
-        echo "FastQC done, reports stored in $rawDataDir"
+        data_dir_path=""
+        echo Enter directory path:
+        echo Example: /home/projects/rawData
+        read data_dir_path
+        echo Running FastQC on all fastq files in $data_dir_path
+        fastqc $data_dir_path/*
+        multiqc $data_dir_path/.
+        echo "FastQC done, reports stored in $data_dir_path"
     elif [ $user_sel == 2 ] # FastQC on user input 
     then
         cd $rawDataDir
@@ -76,14 +80,48 @@ trimReads () {
     echo ================================== 
     echo Trimming and Filtering with fastp
     echo ==================================
-    echo "[1]" Continue with all reads stored in $rawDataDir "[2]" Continue with manual input'(s)' "[r]" Return to menu
+    echo "[1]" Continue with all reads stored in $rawDataDir "[2]" Continue with only select file'(s)'
+    echo "[3]" Continue with all reads stored in a different directory "  ""[r]" Return to menu
     echo "---------------------------------"
     read user_choice
 
-    if [ $user_choice == 1 ]
+    # **Need to add SE or PE selection capability**
+    # Currently written for PE reads only
+    if [ $user_choice == 1 ] # Runs fastp on all raw reads (raw data directory)
     then
-        echo pass
-    elif [ $user_choice == 2 ] # Only runs fastp on user input files
+        SECONDS=0
+        srrArray=()
+        output_dir=""
+        min_length=""
+        echo Enter only SRR Accenssion Numbers of fastq files, separated by space
+        echo Example: SRR101 SRR102 SRR103 SRR104
+        read srrArray
+
+        echo Enter minimum length of reads to filter: 
+        read min_length
+
+        echo Enter path of desired output directory:
+        echo Example: /home/projects/data/trimmedData
+        read output_dir
+        for srr in ${srrArray[@]};
+        do
+            #For paired end reads
+            fq_fwd=${srr}_1.fastq
+            fq_rev=${srr}_2.fastq
+
+            fastp \
+            -i $rawDataDir/$fq_fwd \
+            -I $rawDataDir/$fq_rev \
+            --out1 $output_dir/${srr}_trimmed_1P.fastq \
+            --out2 $output_dir/${srr}_trimmed_2P.fastq \
+            --length_required $min_length
+
+        done
+        duration=SECONDS
+        echo Trimming and Filtering Complete, outputs stored in $output_dir
+        echo "$((duration / 60)) minutes and $(($duration % 60)) seconds elapsed."
+
+    elif [ $user_choice == 2 ] # Only runs fastp on select user input files
     then
         manual_inputs=()
         echo Enter srr file'(s)' you wish to trim and filter, separated by space:
@@ -92,11 +130,30 @@ trimReads () {
         do
             echo Starting fastp for $srr_file
         done
-            
+    elif [ $user_choice == 3 ]       
+    then
+        diff_dir_path=""
+        echo Enter path of directory: 
+        echo Example: /home/projects/xx_rnaseq/data/trimmedData
+        read diff_dir_path
     fi
 
 }
 
+alignToGenome () {
+    user_choice=""
+    echo ================================== 
+    echo Aligning to Genome with HiSAT2 
+    echo ==================================
+    echo "[1]" Continue with all reads stored in $rawDataDir "[2]" Continue with only select file'(s)'
+    echo "[3]" Continue with all reads stored in a different directory "  ""[r]" Return to menu
+    echo "---------------------------------"
+    read user_choice
+}
+
+quantify () {
+    echo pass
+}
 
 startMenu () {
     user_choice=""
