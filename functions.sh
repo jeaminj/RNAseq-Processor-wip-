@@ -41,32 +41,23 @@ getSRRfiles () {
         do
             echo $srr >> srr_numbers.txt
         done
-    elif [ $user_choice == 'r' ] # Returns user to main menu 
-    then
-        startMenu
-    elif [ $user_choice == 'q' ] # Terminates script
-    then
-        echo Closing program...
-        exit
-    else
-        echo Invalid selection, exiting program...
-        exit
     fi
+    backToMenuOrQuit
 
 }
 
 # Program [2]: Quality Control with FASTQC (paired-end reads)
 runQCmenu () {
-    user_sel=""
+    user_choice=""
     echo ============================ 
     echo Quality Control with FastQC 
     echo ============================ 
     echo "[1]" Run FastQC on all fastq files in a directory "[2]" Run FastQC only on select file'(s)' 
     echo "[r]" Return to main menu "  ""[q]" End program
     echo "---------------------------"
-    read user_sel
+    read user_choice
     data_dir_path=""
-    if [ "$user_sel" == 1 ] # FastQC on all .fastq files in a user defined directory
+    if [ "$user_choice" == 1 ] # FastQC on all .fastq files in a user defined directory
     then
         echo Enter root path of directory:
         echo Example: /home/projects/rawData
@@ -75,7 +66,7 @@ runQCmenu () {
         fastqc $data_dir_path/*
         multiqc $data_dir_path/.
         echo "FastQC done, reports stored in $data_dir_path"
-    elif [ $user_sel == 2 ] # FastQC on user input files
+    elif [ $user_choice == 2 ] # FastQC on user input files
     then
         echo Enter root path of directory where file is stored:
         echo Example: /home/projects/rawData
@@ -116,28 +107,20 @@ runQCmenu () {
                 fastqc $data_dir_path/$sr_file
             else
                 echo $data_dir_path/$sr_file does not exist
+            fi
         done
-    elif [ $user_sel == "r" ] # Return to menu
-    then
-        startMenu
-    elif [ $user_sel == "q" ] # Terminate script
-    then
-        echo Closing program...
-        exit
-    else
-        echo No valid selection, closing program...
-        exit
-    fi  
+    fi
+    backToMenuOrQuit
 }
 
 # Program [3]: Trimming and Filtering with Fastp
-trimReads () {
+trimANDfilter () {
     user_choice=""
     echo ================================== 
     echo Trimming and Filtering with fastp
     echo ==================================
-    echo "[1]" Continue with all reads stored in $rawDataDir "[2]" Continue with only select file'(s)'
-    echo "[3]" Continue with all reads stored in a different directory "  ""[r]" Return to menu
+    echo "[1]" Continue with all reads stored in a directory "[2]" Continue with only select file'(s)'
+    echo "[r]" Return to main menu "[q]" End program
     echo "---------------------------------"
     read user_choice
 
@@ -184,14 +167,8 @@ trimReads () {
         do
             echo Starting fastp for $srr_file
         done
-    elif [ $user_choice == 3 ]       
-    then
-        diff_dir_path=""
-        echo Enter path of directory: 
-        echo Example: /home/projects/xx_rnaseq/data/trimmedData
-        read diff_dir_path
     fi
-
+    backToMenuOrQuit
 }
 
 # Program [4]: Alignment with HISAT2
@@ -223,13 +200,13 @@ startMenu () {
     
     if [ $user_choice == 1 ] 
     then
-        getSRA
+        getSRRfiles
     elif [ $user_choice == 2 ]
     then
         runQCmenu
     elif [ $user_choice == 3 ]
     then
-        trimReads
+        trimANDfilter
     elif [ $user_choice == 'q' ]
     then
         echo Closing program...
@@ -238,6 +215,20 @@ startMenu () {
         echo No valid selection made, ending program
         exit
     fi
+}
+
+backToMenuOrQuit() {
+    if [ $user_choice == "r" ]       
+    then
+        startMenu
+    elif [ $user_choice == "q" ] # Terminate script
+    then
+        echo Closing program...
+        exit
+    else
+        echo No valid selection, closing program...
+        exit
+    fi 
 }
 
 # Script start-up program info. and interface
