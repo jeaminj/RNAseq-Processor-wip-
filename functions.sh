@@ -185,7 +185,15 @@ alignToGenome () {
 
 # Program [5]: Quantification with ....
 quantify () {
-    echo pass
+    user_choice=""
+    echo ================================== 
+    echo Aligning to Genome with ....?? 
+    echo ==================================
+    echo "[1]" Continue with all reads stored in $rawDataDir "[2]" Continue with only select file'(s)'
+    echo "[3]" Continue with all reads stored in a different directory "  ""[r]" Return to menu
+    echo "---------------------------------"
+    read user_choice
+    echo wip, coming soon
 }
 
 # Main Menu
