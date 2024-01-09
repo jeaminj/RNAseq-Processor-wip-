@@ -15,8 +15,10 @@ getSRRfiles () {
     echo =================================
     echo Sequence Retriever with SRATools 
     echo ================================= 
-    echo "[1]" Download all SRA Files listed in srr_numbers.txt "[r]" Return to main menu
-    echo "[2]" Download only manual input SRA File'(s)' "[q]" End program
+    echo "[1]" Download all SRA Files listed in srr_dnumbers.txt 
+    echo "[2]" Download only manual input SRA File'(s)' 
+    echo "[r]" Return to main menu
+    echo "[q]" Exit program
     echo "--------------------------------"
     read user_choice
     if [ $user_choice == 1 ] # User selects to use srr_numbers.txt containing SRR accenssion numbers
@@ -52,8 +54,10 @@ runQCmenu () {
     echo ============================ 
     echo Quality Control with FastQC 
     echo ============================ 
-    echo "[1]" Run FastQC on all fastq files in a directory "[2]" Run FastQC only on select file'(s)' 
-    echo "[r]" Return to main menu "  ""[q]" End program
+    echo "[1]" Run FastQC on all fastq files in a directory 
+    echo "[2]" Run FastQC only on select file'(s)' 
+    echo "[r]" Return to main menu 
+    echo "[q]" End program
     echo "---------------------------"
     read user_choice
     data_dir_path=""
@@ -119,8 +123,10 @@ trimANDfilter () {
     echo ================================== 
     echo Trimming and Filtering with fastp
     echo ==================================
-    echo "[1]" Continue with all reads stored in a directory "[2]" Continue with only select file'(s)'
-    echo "[r]" Return to main menu "[q]" End program
+    echo "[1]" Continue with all reads stored in a directory 
+    echo "[2]" Continue with only select file'(s)'
+    echo "[r]" Return to main menu 
+    echo "[q]" Exit program
     echo "---------------------------------"
     read user_choice
 
@@ -189,8 +195,11 @@ quantify () {
     echo ================================== 
     echo Aligning to Genome with ....?? 
     echo ==================================
-    echo "[1]" Continue with all reads stored in $rawDataDir "[2]" Continue with only select file'(s)'
-    echo "[3]" Continue with all reads stored in a different directory "  ""[r]" Return to menu
+    echo "[1]" Continue with all reads stored in $rawDataDir
+    echo "[3]" Continue with all reads stored in a different directory 
+    echo "[2]" Continue with only select file'(s)'
+    echo "[r]" Return to menu
+    echo "[q]" Exit program
     echo "---------------------------------"
     read user_choice
     echo wip, coming soon
@@ -201,8 +210,12 @@ startMenu () {
     user_choice=""
     echo -e "\n"Select a function to proceed:
     echo =============================================
-    echo "[1]" SRA Downloader " [2]" Quality Control  "[3]" Trim and Filter  "[4]" Map to Reference 
-    echo "[5]" Quantify Counts "[q]" Quit
+    echo "[1]" Download sequences from SRA 
+    echo "[2]" Check Quality  
+    echo "[3]" Trim and Filter  
+    echo "[4]" Align to Reference
+    echo "[5]" Quantify Reads
+    echo "[q]" Quit
     echo "---------------------------------------------"
     read user_choice
     
@@ -246,7 +259,7 @@ main () {
     echo -e "\033[1m_______________________________________________________________________\033[0m"
     echo -e "\n This program utilizes the following dependencies:"
     echo -e "\n sratools v2.10.9 | fastqc | multiqc | fastp | HISAT2 | FeatureCounts"
-    echo -e "\n samtools | kallisto? |"
+    echo -e "\n samtools | kallisto |"
     echo _______________________________________________________________________
     startMenu
 }
