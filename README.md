@@ -1,6 +1,6 @@
 # RNAseq-Processor
 
-Interactive command-line program for processing rna-seq data. <br/><br/>
+Custom interactive command-line program for managing and processing rna-seq data for downstream analysis. <br/><br/>
 
 Current applications are limited to standard workflow of pre-processing bulk RNA-seq data, including raw data retrieval, quality control, alignment, and quantification.<br/>
 
@@ -10,5 +10,7 @@ sratools v2.10.9 <br/>
 fastqc <br/>
 mutliqc <br/>
 fastp <br/>
+Kallisto </br>
 HISAT2 <br/>
-featurecounts
+featurecounts <br>
+samtools
