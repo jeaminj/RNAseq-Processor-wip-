@@ -11,15 +11,15 @@ source paths.sh
 
 # Program [1]: Data Retrieval with prefetch and fasterq-dump
 getSRRfiles () {
+   echo "=================================
+Sequence Retriever with SRATools
+=================================
+[1] Download all SRA Files listed in srr_numbers.txt
+[2] Input SRR Accension Number'(s)' to Download
+[r] Return to main menu
+[q] Exit program
+--------------------------------"
     user_choice=""
-    echo =================================
-    echo Sequence Retriever with SRATools 
-    echo ================================= 
-    echo "[1]" Download all SRA Files listed in srr_dnumbers.txt 
-    echo "[2]" Download only manual input SRA File'(s)' 
-    echo "[r]" Return to main menu
-    echo "[q]" Exit program
-    echo "--------------------------------"
     read user_choice
     if [ $user_choice == 1 ] # User selects to use srr_numbers.txt containing SRR accenssion numbers
     then
@@ -50,15 +50,15 @@ getSRRfiles () {
 
 # Program [2]: Quality Control with FASTQC (paired-end reads)
 runQCmenu () {
+    echo "============================ 
+Quality Control with FastQC 
+============================ 
+[1] Run FastQC on all fastq files in a directory 
+[2] Run FastQC only on select file'(s)' 
+[r] Return to main menu 
+[q] End program
+---------------------------"
     user_choice=""
-    echo ============================ 
-    echo Quality Control with FastQC 
-    echo ============================ 
-    echo "[1]" Run FastQC on all fastq files in a directory 
-    echo "[2]" Run FastQC only on select file'(s)' 
-    echo "[r]" Return to main menu 
-    echo "[q]" End program
-    echo "---------------------------"
     read user_choice
     data_dir_path=""
     if [ "$user_choice" == 1 ] # FastQC on all .fastq files in a user defined directory
@@ -119,15 +119,15 @@ runQCmenu () {
 
 # Program [3]: Trimming and Filtering with Fastp
 trimANDfilter () {
+    echo "================================== 
+Trimming and Filtering with fastp
+==================================
+[1] Continue with all reads stored in a directory 
+[2] Continue with only select file'(s)'
+[r] Return to main menu 
+[q] Exit program
+---------------------------------"
     user_choice=""
-    echo ================================== 
-    echo Trimming and Filtering with fastp
-    echo ==================================
-    echo "[1]" Continue with all reads stored in a directory 
-    echo "[2]" Continue with only select file'(s)'
-    echo "[r]" Return to main menu 
-    echo "[q]" Exit program
-    echo "---------------------------------"
     read user_choice
 
     if [ $user_choice == 1 ] # Runs fastp on all raw reads (raw data directory)
@@ -177,30 +177,112 @@ trimANDfilter () {
     backToMenuOrQuit
 }
 
-# Program [4]: Alignment with HISAT2
-alignToGenome () {
+# Main Menu Selection [4]: Picking Aligner Tool
+pickAligner () {
+    echo "================================== 
+Alignment with HISAT2 or Kallisto
+==================================
+[1] Continue with HISAT2
+[2] Continue with Kallisto
+[r] Return to main menu 
+[q] Exit program
+---------------------------------"
     user_choice=""
-    echo ================================== 
-    echo Aligning to Genome with HiSAT2 
-    echo ==================================
-    echo "[1]" Continue with all reads stored in $rawDataDir "[2]" Continue with only select file'(s)'
-    echo "[3]" Continue with all reads stored in a different directory "  ""[r]" Return to menu
-    echo "---------------------------------"
     read user_choice
+    if [ $user_choice == 1 ]
+    then 
+        alignWithHISAT
+    elif [ $user_choice == 2 ]
+    then 
+        alignWithKallisto
+    fi
+    backToMenuOrQuit
 }
 
-# Program [5]: Quantification with ....
-quantify () {
+# Main Menu Selection [4]: Aligning with HISAT (Configured for H.sapiens GrCH38)
+alignWithHISAT () {
+    echo "================================== 
+Alignment with HISAT2
+==================================
+[1] Build HISAT2 index
+[2] Align reads stored in a directory
+[r] Return to main menu 
+[q] Exit program
+---------------------------------"
     user_choice=""
-    echo ================================== 
-    echo Aligning to Genome with ....?? 
-    echo ==================================
-    echo "[1]" Continue with all reads stored in $rawDataDir
-    echo "[3]" Continue with all reads stored in a different directory 
-    echo "[2]" Continue with only select file'(s)'
-    echo "[r]" Return to menu
-    echo "[q]" Exit program
-    echo "---------------------------------"
+    read user_choice
+
+    if [ $user_choice == 1 ] # Download and build hisat index
+    then 
+        cd $wd
+        mkdir hisat_index
+        cd hisat_index
+        wget https://genome-idx.s3.amazonaws.com/hisat/grch38_genome.tar.gz
+        tar -xvf grch38_genome.tar.gz
+    elif [ $user_choice == 2 ]
+    then 
+        data_dir=""
+        read data_dir  
+    fi
+    backToMenuOrQuit
+}
+
+# Main Menu Selection [4]: Aligning with Kallisto (Configured for H.sapiens GrCH38)
+alignWithKallisto () {
+    echo "=================================================
+Pseudoalignment and Quantification with Kallisto
+=================================================
+[1] Build Kallisto index
+[2] psuedoalign and quantify with all reads in trimmedData
+[r] Return to main menu 
+[q] Exit program
+---------------------------------"
+    user_choice=""
+    read user_choice
+
+    if [ $user_choice == 1 ] # Build kallisto index
+    then 
+        echo coming soon
+    elif [ $user_choice == 2 ]
+    then 
+        data_dir=/home/xx_rnaseq/trimmedData 
+        echo Number of boostraps to use? 
+        num_bootstraps=""
+        read num_bootstraps
+
+        data_dir=/home/xx_rnaseq/trimmedData  
+        cd $data_dir
+
+        for srr in ${srr_array[@]};
+            fq_1p=${srr}_trimmed_1P.fastq
+            fq_2p=${srr}_trimmed_2P.fastq
+
+            echo starting quantification with kallisto for $srr
+
+            kallisto quant -i $kal_index -b $num_bootstraps -o $kal_output/${srr} --pseudobam --gtf $gtf $fq_1p $fq_2p
+        do
+    fi
+    backToMenuOrQuit
+
+}
+
+
+
+
+
+
+# Program [5]: Quantification of HISAT aligned reads
+quantifyHISAT () {
+    echo "================================== 
+Aligning to Genome with ....?? 
+ ==================================
+[1] Continue with all reads stored in $rawDataDir
+[3] Continue with all reads stored in a different directory 
+[2] Continue with only select file'(s)'
+[r] Return to menu
+[q] Exit program
+---------------------------------"
+    user_choice=""
     read user_choice
     echo wip, coming soon
 }
@@ -208,7 +290,7 @@ quantify () {
 # Main Menu
 startMenu () {
     user_choice=""
-    echo -e "\n"Select a function to proceed:
+    echo -e "\n"Select a step in the pipeline:
     echo =============================================
     echo "[1]" Download sequences from SRA 
     echo "[2]" Check Quality  
@@ -228,6 +310,12 @@ startMenu () {
     elif [ $user_choice == 3 ]
     then
         trimANDfilter
+    elif [ $user_choice == 4 ]
+    then
+        pickAligner
+    elif [ $user_choice == 5 ]
+    then
+        quantifyHISAT
     elif [ $user_choice == 'q' ]
     then
         echo Closing program...
