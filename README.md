@@ -1,7 +1,7 @@
 # RNAseq-Processor
 
 Custom interactive command-line program for managing and processing rna-seq data for downstream analysis. <br/><br/>
-![](https://github.com/jeaminj/RNAseq-Processor-wip-/blob/main/docs/RNAseq_processor_diagram.png)
+![](https://github.com/jeaminj/RNAseq-Processor-wip-/blob/main/docs/program_diagram.png)
 
 Current applications are limited to standard workflow of pre-processing bulk RNA-seq data, including raw data retrieval, quality control, alignment, and quantification.<br/>
 
