@@ -14,3 +14,5 @@ Kallisto </br>
 HISAT2 <br/>
 featurecounts <br>
 samtools
+
+![](https://github.com/jeaminj/RNAseq-Processor-wip-/blob/main/docs/RNAseq_processor_diagram.png)
